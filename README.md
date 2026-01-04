@@ -1,3 +1,5 @@
+[English](README-EN.md) | [简体中文](README.md)
+
 # 🌳 StructTrace Engine
 
 **数据结构演变追踪引擎** - 实时可视化数据结构操作过程，深入理解算法原理
