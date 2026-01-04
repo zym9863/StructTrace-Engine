@@ -1,0 +1,179 @@
+.benchmark-chart {
+    background: linear-gradient(135deg, #1e1e3f 0%, #2a2a5a 100%);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.benchmark-chart.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    color: #8888aa;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+/* Chart Grid */
+.chart-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.chart-container {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.chart-container.full-width {
+    grid-column: 1 / -1;
+}
+
+.chart-title {
+    margin: 0 0 1rem 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #e0e0ff;
+}
+
+/* Custom Tooltip */
+.custom-tooltip {
+    background: rgba(30, 30, 63, 0.95);
+    border: 1px solid rgba(108, 99, 255, 0.3);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.tooltip-label {
+    margin: 0 0 0.5rem 0;
+    font-weight: 600;
+    color: #e0e0ff;
+}
+
+/* Results Summary */
+.results-summary {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 1.5rem;
+}
+
+.results-summary h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #e0e0ff;
+}
+
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.summary-card {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    padding: 1rem;
+    border-left: 4px solid;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.structure-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: white;
+}
+
+.status-badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+}
+
+.status-badge.completed {
+    background: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+.status-badge.running {
+    background: rgba(108, 99, 255, 0.2);
+    color: #6c63ff;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+}
+
+.card-stats {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.stat {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #e0e0ff;
+}
+
+.stat-label {
+    font-size: 0.7rem;
+    color: #8888aa;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .chart-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .summary-cards {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Recharts Overrides */
+.recharts-cartesian-axis-tick-value {
+    fill: #8888aa;
+}
+
+.recharts-legend-item-text {
+    color: #e0e0ff !important;
+}
+
+.recharts-bar-rectangle {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}

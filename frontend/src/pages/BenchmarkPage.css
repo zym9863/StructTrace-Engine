@@ -1,0 +1,337 @@
+.benchmark-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #0a0a1a 100%);
+}
+
+/* Header */
+.page-header {
+    padding: 2rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(108, 99, 255, 0.2);
+}
+
+.header-content {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.page-header h1 {
+    margin: 0 0 0.5rem 0;
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #e0e0ff, #6c63ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-header p {
+    margin: 0;
+    color: #8888aa;
+}
+
+/* Content */
+.page-content {
+    padding: 2rem;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.benchmark-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 2rem;
+}
+
+/* Config Panel */
+.config-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.panel-section {
+    background: linear-gradient(180deg, #1a1a3e 0%, #12122a 100%);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid rgba(108, 99, 255, 0.15);
+}
+
+.panel-section h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0 0 1.5rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #e0e0ff;
+}
+
+/* Config Groups */
+.config-group {
+    margin-bottom: 1.5rem;
+}
+
+.config-group label {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #8888aa;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+}
+
+/* Size Options */
+.size-options {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+}
+
+.size-btn {
+    padding: 0.75rem 0.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #8888aa;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.size-btn:hover:not(:disabled) {
+    background: rgba(108, 99, 255, 0.1);
+    border-color: rgba(108, 99, 255, 0.3);
+}
+
+.size-btn.active {
+    background: linear-gradient(135deg, #6c63ff, #a855f7);
+    border-color: transparent;
+    color: white;
+}
+
+.size-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Structure Options */
+.structure-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.structure-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.structure-checkbox:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.structure-checkbox.checked {
+    background: color-mix(in srgb, var(--accent-color) 15%, transparent);
+    border-color: var(--accent-color);
+}
+
+.structure-checkbox input {
+    display: none;
+}
+
+.checkbox-indicator {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    position: relative;
+    transition: all 0.2s;
+}
+
+.structure-checkbox.checked .checkbox-indicator {
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.structure-checkbox.checked .checkbox-indicator::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.checkbox-label {
+    color: #e0e0ff;
+    font-size: 0.9rem;
+}
+
+/* Operation Options */
+.operation-options {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.operation-btn {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #8888aa;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.operation-btn:hover:not(:disabled) {
+    background: rgba(108, 99, 255, 0.1);
+}
+
+.operation-btn.active {
+    background: linear-gradient(135deg, #6c63ff, #a855f7);
+    border-color: transparent;
+    color: white;
+}
+
+.operation-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Action Buttons */
+.action-buttons {
+    margin-top: 1.5rem;
+}
+
+.action-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.action-btn.start {
+    background: linear-gradient(135deg, #6c63ff, #a855f7);
+    color: white;
+    box-shadow: 0 4px 16px rgba(108, 99, 255, 0.3);
+}
+
+.action-btn.start:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(108, 99, 255, 0.5);
+}
+
+.action-btn.start:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.action-btn.stop {
+    background: rgba(239, 68, 68, 0.2);
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    color: #f87171;
+}
+
+.action-btn.stop:hover {
+    background: rgba(239, 68, 68, 0.3);
+}
+
+/* Error Message */
+.error-message {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 8px;
+    color: #f87171;
+    font-size: 0.85rem;
+}
+
+/* Progress Section */
+.progress-section h3 {
+    margin-bottom: 1rem;
+}
+
+.progress-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.progress-item {
+    display: grid;
+    grid-template-columns: 80px 1fr 40px;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.progress-label {
+    font-size: 0.85rem;
+    color: #e0e0ff;
+}
+
+.progress-bar {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+.progress-value {
+    font-size: 0.8rem;
+    color: #8888aa;
+    text-align: right;
+}
+
+/* Results Area */
+.results-area {
+    min-height: 600px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .benchmark-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .size-options {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .page-content {
+        padding: 1rem;
+    }
+
+    .panel-section {
+        padding: 1rem;
+    }
+}

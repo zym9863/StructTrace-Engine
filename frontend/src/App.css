@@ -1,42 +1,116 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* Main Navigation */
+.main-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 2rem;
+  background: rgba(10, 10, 26, 0.95);
+  border-bottom: 1px solid rgba(108, 99, 255, 0.15);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(12px);
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.brand-icon {
+  font-size: 1.5rem;
+}
+
+.brand-text {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #e0e0ff;
+  letter-spacing: -0.5px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  border-radius: 10px;
+  color: #8888aa;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.nav-link:hover {
+  color: #b0b0ff;
+  background: rgba(108, 99, 255, 0.1);
+}
+
+.nav-link.active {
+  color: #e0e0ff;
+  background: rgba(108, 99, 255, 0.2);
+}
+
+.nav-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.github-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: #e0e0ff;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.github-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Responsive Navigation */
+@media (max-width: 768px) {
+  .main-nav {
+    padding: 0.75rem 1rem;
   }
-  to {
-    transform: rotate(360deg);
+
+  .nav-link span {
+    display: none;
   }
-}
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+  .nav-link {
+    padding: 0.625rem;
   }
-}
 
-.card {
-  padding: 2em;
-}
+  .brand-text {
+    display: none;
+  }
 
-.read-the-docs {
-  color: #888;
+  .github-btn {
+    padding: 0.5rem;
+  }
+
+  .github-btn span {
+    display: none;
+  }
 }

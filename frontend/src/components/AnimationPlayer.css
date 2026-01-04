@@ -1,0 +1,236 @@
+.animation-player {
+    background: linear-gradient(135deg, #1e1e3f 0%, #2a2a5a 100%);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(108, 99, 255, 0.2);
+}
+
+.animation-player.empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100px;
+    color: #8888aa;
+}
+
+/* Step Info */
+.step-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: rgba(108, 99, 255, 0.1);
+    border-radius: 12px;
+    border: 1px solid rgba(108, 99, 255, 0.2);
+}
+
+.step-icon {
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(108, 99, 255, 0.2);
+    border-radius: 10px;
+}
+
+.step-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.step-type {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6c63ff;
+    font-weight: 600;
+}
+
+.step-description {
+    color: #e0e0ff;
+    font-size: 0.95rem;
+}
+
+.step-counter {
+    font-size: 0.9rem;
+    color: #8888aa;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 20px;
+}
+
+/* Progress Bar */
+.progress-container {
+    position: relative;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+    overflow: visible;
+}
+
+.progress-slider {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.progress-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #6c63ff;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(108, 99, 255, 0.5);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.progress-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 0 4px 16px rgba(108, 99, 255, 0.7);
+}
+
+.progress-fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    background: linear-gradient(90deg, #6c63ff, #a855f7);
+    border-radius: 4px;
+    transition: width 0.1s ease;
+    pointer-events: none;
+}
+
+/* Controls */
+.controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.main-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.control-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #e0e0ff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.control-btn:hover:not(:disabled) {
+    background: rgba(108, 99, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.control-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.control-btn.play-btn {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, #6c63ff, #a855f7);
+    border-radius: 50%;
+    box-shadow: 0 4px 16px rgba(108, 99, 255, 0.4);
+}
+
+.control-btn.play-btn:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 24px rgba(108, 99, 255, 0.6);
+}
+
+/* Speed Control */
+.speed-control {
+    gap: 0.75rem;
+}
+
+.speed-control label {
+    font-size: 0.85rem;
+    color: #8888aa;
+}
+
+.speed-control select {
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: #e0e0ff;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.speed-control select:hover {
+    background: rgba(108, 99, 255, 0.2);
+    border-color: rgba(108, 99, 255, 0.3);
+}
+
+.speed-control select:focus {
+    outline: none;
+    border-color: #6c63ff;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .animation-player {
+        padding: 1rem;
+    }
+
+    .step-info {
+        flex-wrap: wrap;
+    }
+
+    .step-counter {
+        width: 100%;
+        text-align: center;
+        margin-top: 0.5rem;
+    }
+
+    .controls {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .control-group:first-child,
+    .speed-control {
+        order: 2;
+    }
+
+    .main-controls {
+        order: 1;
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 0.5rem;
+    }
+}

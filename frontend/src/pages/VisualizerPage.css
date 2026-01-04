@@ -1,0 +1,134 @@
+.visualizer-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #0a0a1a 100%);
+}
+
+/* Header */
+.page-header {
+    padding: 2rem;
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(108, 99, 255, 0.2);
+}
+
+.header-content {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.page-header h1 {
+    margin: 0 0 0.5rem 0;
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #e0e0ff, #6c63ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-header p {
+    margin: 0;
+    color: #8888aa;
+    font-size: 1rem;
+}
+
+/* Content */
+.page-content {
+    padding: 2rem;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.visualizer-layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 2rem;
+    min-height: calc(100vh - 200px);
+}
+
+/* Controls Panel */
+.controls-panel {
+    position: sticky;
+    top: 2rem;
+    align-self: start;
+}
+
+/* Visualization Area */
+.visualization-area {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Error Banner */
+.error-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 12px;
+    color: #f87171;
+}
+
+.error-banner button {
+    background: none;
+    border: none;
+    color: #f87171;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0.25rem;
+    line-height: 1;
+}
+
+.error-banner button:hover {
+    color: #fca5a5;
+}
+
+/* Canvas Container */
+.canvas-container {
+    flex: 1;
+    min-height: 500px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Player Container */
+.player-container {
+    flex-shrink: 0;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .visualizer-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .controls-panel {
+        position: static;
+        order: 2;
+    }
+
+    .visualization-area {
+        order: 1;
+    }
+}
+
+@media (max-width: 640px) {
+    .page-header {
+        padding: 1.5rem 1rem;
+    }
+
+    .page-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .page-content {
+        padding: 1rem;
+    }
+
+    .canvas-container {
+        min-height: 350px;
+    }
+}
