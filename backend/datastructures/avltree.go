@@ -233,3 +233,126 @@ func (t *AVLTree) Search(value int) OperationResult {
 		FinalTree: t.getTreeSnapshot(),
 	}
 }
+
+// minValueNode finds the node with minimum value in a subtree
+func (t *AVLTree) minValueNode(node *AVLNode) *AVLNode {
+	current := node
+	for current.Left != nil {
+		current = current.Left
+	}
+	return current
+}
+
+// delete deletes a node with given value from the subtree
+func (t *AVLTree) delete(node *AVLNode, value int) *AVLNode {
+	if node == nil {
+		t.addStep(StepNotFound, fmt.Sprintf("值 %d 不存在于树中", value), nil)
+		return node
+	}
+
+	t.addStep(StepCompare, fmt.Sprintf("比较 %d 与节点 %d", value, node.Value), &node.ID, []int{node.ID})
+
+	if value < node.Value {
+		node.Left = t.delete(node.Left, value)
+	} else if value > node.Value {
+		node.Right = t.delete(node.Right, value)
+	} else {
+		// Node to be deleted found
+		t.addStep(StepDelete, fmt.Sprintf("找到要删除的节点 %d", value), &node.ID, []int{node.ID})
+
+		// Node with only one child or no child
+		if node.Left == nil {
+			t.addStep(StepDelete, fmt.Sprintf("节点 %d 没有左子节点，用右子节点替换", node.Value), &node.ID)
+			return node.Right
+		} else if node.Right == nil {
+			t.addStep(StepDelete, fmt.Sprintf("节点 %d 没有右子节点，用左子节点替换", node.Value), &node.ID)
+			return node.Left
+		}
+
+		// Node with two children: Get the inorder successor (smallest in right subtree)
+		successor := t.minValueNode(node.Right)
+		t.addStep(StepDelete, fmt.Sprintf("节点 %d 有两个子节点，找到后继节点 %d", node.Value, successor.Value), &successor.ID, []int{node.ID, successor.ID})
+
+		// Copy the inorder successor's value to this node
+		node.Value = successor.Value
+		node.ID = successor.ID
+		t.addStep(StepDelete, fmt.Sprintf("用后继节点 %d 替换被删除节点", successor.Value), &node.ID)
+
+		// Delete the inorder successor
+		node.Right = t.delete(node.Right, successor.Value)
+	}
+
+	// Update height
+	node.Height = 1 + max(height(node.Left), height(node.Right))
+
+	// Get balance factor
+	balance := t.getBalance(node)
+
+	// Left Left Case
+	if balance > 1 && t.getBalance(node.Left) >= 0 {
+		t.addStep(StepRebalance, "LL情况：需要右旋", &node.ID, []int{node.ID})
+		return t.rightRotate(node)
+	}
+
+	// Left Right Case
+	if balance > 1 && t.getBalance(node.Left) < 0 {
+		t.addStep(StepRebalance, "LR情况：先左旋后右旋", &node.ID, []int{node.ID})
+		node.Left = t.leftRotate(node.Left)
+		return t.rightRotate(node)
+	}
+
+	// Right Right Case
+	if balance < -1 && t.getBalance(node.Right) <= 0 {
+		t.addStep(StepRebalance, "RR情况：需要左旋", &node.ID, []int{node.ID})
+		return t.leftRotate(node)
+	}
+
+	// Right Left Case
+	if balance < -1 && t.getBalance(node.Right) > 0 {
+		t.addStep(StepRebalance, "RL情况：先右旋后左旋", &node.ID, []int{node.ID})
+		node.Right = t.rightRotate(node.Right)
+		return t.leftRotate(node)
+	}
+
+	return node
+}
+
+// Delete deletes a value from the AVL Tree
+func (t *AVLTree) Delete(value int) OperationResult {
+	t.clearSteps()
+	t.addStep(StepDelete, fmt.Sprintf("开始删除值 %d", value), nil)
+
+	// Check if value exists
+	found := false
+	current := t.Root
+	for current != nil {
+		if value == current.Value {
+			found = true
+			break
+		} else if value < current.Value {
+			current = current.Left
+		} else {
+			current = current.Right
+		}
+	}
+
+	if !found {
+		t.addStep(StepNotFound, fmt.Sprintf("值 %d 不存在于树中，无法删除", value), nil)
+		return OperationResult{
+			Success:   false,
+			Message:   fmt.Sprintf("值 %d 不存在，无法删除", value),
+			Steps:     t.steps,
+			FinalTree: t.getTreeSnapshot(),
+		}
+	}
+
+	t.Root = t.delete(t.Root, value)
+	t.addStep(StepComplete, fmt.Sprintf("删除节点 %d 完成", value), nil)
+
+	return OperationResult{
+		Success:   true,
+		Message:   fmt.Sprintf("成功删除值 %d", value),
+		Steps:     t.steps,
+		FinalTree: t.getTreeSnapshot(),
+	}
+}

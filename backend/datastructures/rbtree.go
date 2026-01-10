@@ -282,3 +282,188 @@ func (t *RedBlackTree) Search(value int) OperationResult {
 		FinalTree: t.getTreeSnapshot(),
 	}
 }
+
+// transplant replaces subtree rooted at u with subtree rooted at v
+func (t *RedBlackTree) transplant(u, v *RBNode) {
+	if u.Parent == t.NIL {
+		t.Root = v
+	} else if u == u.Parent.Left {
+		u.Parent.Left = v
+	} else {
+		u.Parent.Right = v
+	}
+	v.Parent = u.Parent
+}
+
+// minimum finds the minimum node in a subtree
+func (t *RedBlackTree) minimum(node *RBNode) *RBNode {
+	for node.Left != t.NIL {
+		node = node.Left
+	}
+	return node
+}
+
+// searchNode searches for a node with given value
+func (t *RedBlackTree) searchNode(value int) *RBNode {
+	x := t.Root
+	for x != t.NIL {
+		if value == x.Value {
+			return x
+		} else if value < x.Value {
+			x = x.Left
+		} else {
+			x = x.Right
+		}
+	}
+	return t.NIL
+}
+
+// Delete deletes a value from the Red-Black Tree
+func (t *RedBlackTree) Delete(value int) OperationResult {
+	t.clearSteps()
+
+	// Search for the node to delete
+	z := t.searchNode(value)
+
+	if z == t.NIL {
+		t.addStep(StepNotFound, fmt.Sprintf("值 %d 不存在于树中，无法删除", value), nil)
+		return OperationResult{
+			Success:   false,
+			Message:   fmt.Sprintf("值 %d 不存在，无法删除", value),
+			Steps:     t.steps,
+			FinalTree: t.getTreeSnapshot(),
+		}
+	}
+
+	t.addStep(StepDelete, fmt.Sprintf("找到要删除的节点 %d", value), &z.ID, []int{z.ID})
+
+	y := z
+	yOriginalColor := y.Color
+	var x *RBNode
+
+	if z.Left == t.NIL {
+		// Case 1: No left child
+		t.addStep(StepDelete, fmt.Sprintf("节点 %d 没有左子节点，用右子节点替换", z.Value), &z.ID)
+		x = z.Right
+		t.transplant(z, z.Right)
+	} else if z.Right == t.NIL {
+		// Case 2: No right child
+		t.addStep(StepDelete, fmt.Sprintf("节点 %d 没有右子节点，用左子节点替换", z.Value), &z.ID)
+		x = z.Left
+		t.transplant(z, z.Left)
+	} else {
+		// Case 3: Both children exist
+		y = t.minimum(z.Right)
+		yOriginalColor = y.Color
+		x = y.Right
+		t.addStep(StepDelete, fmt.Sprintf("节点 %d 有两个子节点，找到后继节点 %d", z.Value, y.Value), &y.ID, []int{z.ID, y.ID})
+
+		if y.Parent == z {
+			x.Parent = y
+		} else {
+			t.transplant(y, y.Right)
+			y.Right = z.Right
+			y.Right.Parent = y
+		}
+		t.transplant(z, y)
+		y.Left = z.Left
+		y.Left.Parent = y
+		y.Color = z.Color
+		t.addStep(StepDelete, fmt.Sprintf("用后继节点 %d 替换被删除节点", y.Value), &y.ID)
+	}
+
+	// Fix Red-Black Tree properties if needed
+	if yOriginalColor == Black {
+		t.addStep(StepRebalance, "删除了黑色节点，需要修复红黑树性质", nil)
+		t.deleteFixup(x)
+	}
+
+	t.addStep(StepComplete, fmt.Sprintf("删除节点 %d 完成", value), nil)
+
+	return OperationResult{
+		Success:   true,
+		Message:   fmt.Sprintf("成功删除值 %d", value),
+		Steps:     t.steps,
+		FinalTree: t.getTreeSnapshot(),
+	}
+}
+
+// deleteFixup fixes Red-Black Tree properties after deletion
+func (t *RedBlackTree) deleteFixup(x *RBNode) {
+	for x != t.Root && x.Color == Black {
+		if x == x.Parent.Left {
+			w := x.Parent.Right // sibling
+			if w.Color == Red {
+				// Case 1: Sibling is red
+				t.addStep(StepRebalance, "情况1: 兄弟节点为红色", &w.ID, []int{x.ID, w.ID})
+				w.Color = Black
+				x.Parent.Color = Red
+				t.addStep(StepColorChange, fmt.Sprintf("兄弟节点 %d 变黑，父节点 %d 变红", w.Value, x.Parent.Value), &x.Parent.ID)
+				t.leftRotate(x.Parent)
+				w = x.Parent.Right
+			}
+			if w.Left.Color == Black && w.Right.Color == Black {
+				// Case 2: Sibling is black with two black children
+				t.addStep(StepRebalance, "情况2: 兄弟节点为黑色，其两个子节点均为黑色", &w.ID, []int{w.ID})
+				w.Color = Red
+				t.addStep(StepColorChange, fmt.Sprintf("兄弟节点 %d 变红", w.Value), &w.ID)
+				x = x.Parent
+			} else {
+				if w.Right.Color == Black {
+					// Case 3: Sibling is black, left child is red, right child is black
+					t.addStep(StepRebalance, "情况3: 兄弟节点为黑色，左子为红，右子为黑", &w.ID)
+					w.Left.Color = Black
+					w.Color = Red
+					t.addStep(StepColorChange, fmt.Sprintf("兄弟左子节点变黑，兄弟 %d 变红", w.Value), &w.ID)
+					t.rightRotate(w)
+					w = x.Parent.Right
+				}
+				// Case 4: Sibling is black with red right child
+				t.addStep(StepRebalance, "情况4: 兄弟节点为黑色，右子为红色", &w.ID)
+				w.Color = x.Parent.Color
+				x.Parent.Color = Black
+				w.Right.Color = Black
+				t.addStep(StepColorChange, fmt.Sprintf("重新着色完成"), &w.ID)
+				t.leftRotate(x.Parent)
+				x = t.Root
+			}
+		} else {
+			// Mirror cases
+			w := x.Parent.Left // sibling
+			if w.Color == Red {
+				t.addStep(StepRebalance, "情况1(镜像): 兄弟节点为红色", &w.ID, []int{x.ID, w.ID})
+				w.Color = Black
+				x.Parent.Color = Red
+				t.addStep(StepColorChange, fmt.Sprintf("兄弟节点 %d 变黑，父节点 %d 变红", w.Value, x.Parent.Value), &x.Parent.ID)
+				t.rightRotate(x.Parent)
+				w = x.Parent.Left
+			}
+			if w.Right.Color == Black && w.Left.Color == Black {
+				t.addStep(StepRebalance, "情况2(镜像): 兄弟节点为黑色，其两个子节点均为黑色", &w.ID, []int{w.ID})
+				w.Color = Red
+				t.addStep(StepColorChange, fmt.Sprintf("兄弟节点 %d 变红", w.Value), &w.ID)
+				x = x.Parent
+			} else {
+				if w.Left.Color == Black {
+					t.addStep(StepRebalance, "情况3(镜像): 兄弟节点为黑色，右子为红，左子为黑", &w.ID)
+					w.Right.Color = Black
+					w.Color = Red
+					t.addStep(StepColorChange, fmt.Sprintf("兄弟右子节点变黑，兄弟 %d 变红", w.Value), &w.ID)
+					t.leftRotate(w)
+					w = x.Parent.Left
+				}
+				t.addStep(StepRebalance, "情况4(镜像): 兄弟节点为黑色，左子为红色", &w.ID)
+				w.Color = x.Parent.Color
+				x.Parent.Color = Black
+				w.Left.Color = Black
+				t.addStep(StepColorChange, fmt.Sprintf("重新着色完成"), &w.ID)
+				t.rightRotate(x.Parent)
+				x = t.Root
+			}
+		}
+	}
+	if x.Color == Red {
+		x.Color = Black
+		t.addStep(StepColorChange, "将当前节点变黑以完成修复", &x.ID)
+	}
+}

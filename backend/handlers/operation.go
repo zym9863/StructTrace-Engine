@@ -61,6 +61,9 @@ func handleRBTreeOperation(req OperationRequest) datastructures.OperationResult 
 	case "search":
 		value := getIntParam(req.Params, "value", 0)
 		return rbTree.Search(value)
+	case "delete":
+		value := getIntParam(req.Params, "value", 0)
+		return rbTree.Delete(value)
 	case "reset":
 		rbTree = datastructures.NewRedBlackTree()
 		return datastructures.OperationResult{
@@ -84,6 +87,9 @@ func handleAVLTreeOperation(req OperationRequest) datastructures.OperationResult
 	case "search":
 		value := getIntParam(req.Params, "value", 0)
 		return avlTree.Search(value)
+	case "delete":
+		value := getIntParam(req.Params, "value", 0)
+		return avlTree.Delete(value)
 	case "reset":
 		avlTree = datastructures.NewAVLTree()
 		return datastructures.OperationResult{
