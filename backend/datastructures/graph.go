@@ -32,13 +32,15 @@ func (g *Graph) clearSteps() {
 	g.steps = make([]Step, 0)
 }
 
-func (g *Graph) addStep(stepType StepType, desc string, distances map[string]int, visited map[string]bool, path []string, currentEdge *[2]string) {
+func (g *Graph) buildSnapshot(distances map[string]int, visited map[string]bool, path []string, currentEdge *[2]string) ([]GraphNodeSnapshot, []GraphEdgeSnapshot) {
 	nodes := make([]GraphNodeSnapshot, 0)
 	for id := range g.Nodes {
-		dist := distances[id]
 		var distPtr *int
-		if dist != math.MaxInt32 {
-			distPtr = &dist
+		if distances != nil {
+			if dist, ok := distances[id]; ok && dist != math.MaxInt32 {
+				d := dist
+				distPtr = &d
+			}
 		}
 		coords := g.NodeCoords[id]
 		inPath := false
@@ -48,13 +50,17 @@ func (g *Graph) addStep(stepType StepType, desc string, distances map[string]int
 				break
 			}
 		}
+		visitedVal := false
+		if visited != nil {
+			visitedVal = visited[id]
+		}
 		nodes = append(nodes, GraphNodeSnapshot{
 			ID:       id,
 			Label:    id,
 			X:        coords[0],
 			Y:        coords[1],
 			Distance: distPtr,
-			Visited:  visited[id],
+			Visited:  visitedVal,
 			InPath:   inPath,
 		})
 	}
@@ -83,6 +89,11 @@ func (g *Graph) addStep(stepType StepType, desc string, distances map[string]int
 		}
 	}
 
+	return nodes, edges
+}
+
+func (g *Graph) addStep(stepType StepType, desc string, distances map[string]int, visited map[string]bool, path []string, currentEdge *[2]string) {
+	nodes, edges := g.buildSnapshot(distances, visited, path, currentEdge)
 	step := Step{
 		Type:        stepType,
 		Description: desc,
@@ -104,6 +115,46 @@ func (g *Graph) AddNode(id string, x, y float64) {
 func (g *Graph) AddEdge(from, to string, weight int) {
 	g.Nodes[from] = append(g.Nodes[from], Edge{To: to, Weight: weight})
 	g.Nodes[to] = append(g.Nodes[to], Edge{To: from, Weight: weight}) // Undirected
+}
+
+// Insert adds a node into the graph for visualization.
+// The frontend currently passes a numeric value; we use it as node ID/label.
+func (g *Graph) Insert(value int) OperationResult {
+	g.clearSteps()
+
+	id := fmt.Sprintf("%d", value)
+	if _, exists := g.Nodes[id]; exists {
+		return OperationResult{
+			Success: false,
+			Message: fmt.Sprintf("节点 %s 已存在", id),
+			Steps:   []Step{},
+		}
+	}
+
+	// Auto-layout: spread nodes using golden angle around a center.
+	centerX, centerY := 325.0, 150.0
+	radius := 220.0
+	idx := float64(len(g.Nodes))
+	angle := idx * 2.399963229728653 // golden angle in radians
+	x := centerX + radius*math.Cos(angle)
+	y := centerY + radius*math.Sin(angle)
+
+	g.AddNode(id, x, y)
+	g.addStep(StepInsert, fmt.Sprintf("添加节点 %s", id), nil, nil, nil, nil)
+	g.addStep(StepComplete, "插入完成", nil, nil, nil, nil)
+
+	nodes, edges := g.buildSnapshot(nil, nil, nil, nil)
+	return OperationResult{
+		Success: true,
+		Steps:   g.steps,
+		FinalGraph: &struct {
+			Nodes []GraphNodeSnapshot `json:"nodes"`
+			Edges []GraphEdgeSnapshot `json:"edges"`
+		}{
+			Nodes: nodes,
+			Edges: edges,
+		},
+	}
 }
 
 // PriorityQueueItem for Dijkstra

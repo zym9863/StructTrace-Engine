@@ -107,6 +107,9 @@ func handleAVLTreeOperation(req OperationRequest) datastructures.OperationResult
 
 func handleGraphOperation(req OperationRequest) datastructures.OperationResult {
 	switch req.Operation {
+	case "insert":
+		value := getIntParam(req.Params, "value", 0)
+		return graph.Insert(value)
 	case "shortest_path":
 		start := getStringParam(req.Params, "start", "A")
 		end := getStringParam(req.Params, "end", "F")
