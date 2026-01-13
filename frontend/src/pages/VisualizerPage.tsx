@@ -1,9 +1,10 @@
 import { useState, useCallback } from 'react';
 import { TreeCanvas } from '../components/TreeCanvas';
+import { GraphCanvas } from '../components/GraphCanvas';
 import { AnimationPlayer } from '../components/AnimationPlayer';
 import { OperationPanel } from '../components/OperationPanel';
 import { executeOperation, resetStructure } from '../services/api';
-import type { Step, TreeNodeSnapshot, OperationRequest } from '../types';
+import type { Step, TreeNodeSnapshot, GraphNodeSnapshot, GraphEdgeSnapshot, OperationRequest } from '../types';
 import './VisualizerPage.css';
 
 export function VisualizerPage() {
@@ -11,9 +12,14 @@ export function VisualizerPage() {
     const [steps, setSteps] = useState<Step[]>([]);
     const [currentStep, setCurrentStep] = useState<number>(0);
     const [treeNodes, setTreeNodes] = useState<TreeNodeSnapshot[]>([]);
+    const [graphNodes, setGraphNodes] = useState<GraphNodeSnapshot[]>([]);
+    const [graphEdges, setGraphEdges] = useState<GraphEdgeSnapshot[]>([]);
     const [highlightedNodes, setHighlightedNodes] = useState<number[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    // Check if we're in graph mode
+    const isGraphMode = structure === 'graph';
 
     const handleExecute = useCallback(
         async (structureType: string, operation: string, params: Record<string, unknown>) => {
@@ -33,15 +39,35 @@ export function VisualizerPage() {
                     setSteps(result.steps);
                     setCurrentStep(0);
 
-                    // Set initial tree state if available
-                    if (result.steps.length > 0 && result.steps[0].treeState) {
-                        setTreeNodes(result.steps[0].treeState);
-                    }
+                    // Handle tree structures
+                    if (structureType !== 'graph') {
+                        // Set initial tree state if available
+                        if (result.steps.length > 0 && result.steps[0].treeState) {
+                            setTreeNodes(result.steps[0].treeState);
+                        }
 
-                    // Update final tree state
-                    if (result.finalTree) {
-                        // After animation finishes, show final state
-                        setTreeNodes(result.finalTree);
+                        // Update final tree state
+                        if (result.finalTree) {
+                            setTreeNodes(result.finalTree);
+                        }
+                    } else {
+                        // Handle graph structure
+                        // Set initial graph state if available
+                        if (result.steps.length > 0) {
+                            const firstStep = result.steps[0];
+                            if (firstStep.graphNodes) {
+                                setGraphNodes(firstStep.graphNodes);
+                            }
+                            if (firstStep.graphEdges) {
+                                setGraphEdges(firstStep.graphEdges);
+                            }
+                        }
+
+                        // Update final graph state
+                        if (result.finalGraph) {
+                            setGraphNodes(result.finalGraph.nodes);
+                            setGraphEdges(result.finalGraph.edges);
+                        }
                     }
                 } else {
                     setError(result.message || '操作失败');
@@ -61,6 +87,8 @@ export function VisualizerPage() {
             setSteps([]);
             setCurrentStep(0);
             setTreeNodes([]);
+            setGraphNodes([]);
+            setGraphEdges([]);
             setHighlightedNodes([]);
             setError(null);
         } catch (err) {
@@ -78,6 +106,15 @@ export function VisualizerPage() {
                 if (step.treeState) {
                     setTreeNodes(step.treeState);
                 }
+
+                // Update graph visualization based on current step
+                if (step.graphNodes) {
+                    setGraphNodes(step.graphNodes);
+                }
+                if (step.graphEdges) {
+                    setGraphEdges(step.graphEdges);
+                }
+
                 // Update highlighted nodes
                 if (step.highlight) {
                     setHighlightedNodes(step.highlight);
@@ -123,12 +160,20 @@ export function VisualizerPage() {
                         )}
 
                         <div className="canvas-container">
-                            <TreeCanvas
-                                nodes={treeNodes}
-                                highlightedNodes={highlightedNodes}
-                                showLabels={true}
-                                animated={true}
-                            />
+                            {isGraphMode ? (
+                                <GraphCanvas
+                                    nodes={graphNodes}
+                                    edges={graphEdges}
+                                    animated={true}
+                                />
+                            ) : (
+                                <TreeCanvas
+                                    nodes={treeNodes}
+                                    highlightedNodes={highlightedNodes}
+                                    showLabels={true}
+                                    animated={true}
+                                />
+                            )}
                         </div>
 
                         <div className="player-container">
