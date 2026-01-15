@@ -113,14 +113,30 @@ func (r *Runner) runSingleBenchmark(structure, operation string, data []int, cal
 	endMem := getMemoryUsage()
 	duration := time.Since(startTime).Seconds() * 1000
 
+	select {
+	case <-r.stopChan:
+		return
+	default:
+	}
+
+	memoryUsed := uint64(0)
+	if endMem > startMem {
+		memoryUsed = endMem - startMem
+	}
+
+	opsPerSec := 0.0
+	if duration > 0 {
+		opsPerSec = float64(len(data)) / (duration / 1000)
+	}
+
 	// Final result
 	callback(BenchmarkResult{
 		Structure:  structure,
 		Operation:  operation,
 		DataSize:   len(data),
 		Duration:   duration,
-		MemoryUsed: endMem - startMem,
-		OpsPerSec:  float64(len(data)) / (duration / 1000),
+		MemoryUsed: memoryUsed,
+		OpsPerSec:  opsPerSec,
 		Progress:   100,
 		Completed:  true,
 	})
@@ -279,7 +295,13 @@ func (r *Runner) Stop() {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	if r.running {
-		close(r.stopChan)
+		select {
+		case <-r.stopChan:
+			// already closed
+		default:
+			close(r.stopChan)
+		}
+		r.running = false
 	}
 }
 

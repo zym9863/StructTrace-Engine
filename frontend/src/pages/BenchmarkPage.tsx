@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { Play, Square, Settings } from 'lucide-react';
 import { BenchmarkChart } from '../components/BenchmarkChart';
 import type { BenchmarkResult, BenchmarkConfig } from '../types';
@@ -16,6 +16,8 @@ export function BenchmarkPage() {
     const [progressResults, setProgressResults] = useState<BenchmarkResult[]>([]);
     const [completedResults, setCompletedResults] = useState<BenchmarkResult[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const abortControllerRef = useRef<AbortController | null>(null);
+    const runIdRef = useRef(0);
 
     const structures = [
         { id: 'hashmap', name: 'HashMap', color: '#22c55e' },
@@ -31,7 +33,27 @@ export function BenchmarkPage() {
         { value: 100000, label: '100K' },
     ];
 
+    const isBenchmarkResult = (value: any): value is BenchmarkResult => {
+        return (
+            value &&
+            typeof value.structure === 'string' &&
+            typeof value.operation === 'string' &&
+            typeof value.dataSize === 'number' &&
+            typeof value.duration === 'number' &&
+            typeof value.memoryUsed === 'number' &&
+            typeof value.opsPerSec === 'number' &&
+            typeof value.progress === 'number' &&
+            typeof value.completed === 'boolean'
+        );
+    };
+
     const handleStart = useCallback(async () => {
+        abortControllerRef.current?.abort();
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
+        const runId = runIdRef.current + 1;
+        runIdRef.current = runId;
+
         setIsRunning(true);
         setError(null);
         setProgressResults([]);
@@ -42,6 +64,7 @@ export function BenchmarkPage() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(config),
+                signal: controller.signal,
             });
 
             if (!response.ok) {
@@ -55,48 +78,94 @@ export function BenchmarkPage() {
             }
 
             const decoder = new TextDecoder();
-            const completed: BenchmarkResult[] = [];
+            let buffer = '';
+            let currentEvent = 'message';
 
             while (true) {
                 const { done, value } = await reader.read();
-                if (done) break;
+                if (done || runId !== runIdRef.current) break;
 
-                const chunk = decoder.decode(value);
-                const lines = chunk.split('\n');
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split(/\r?\n/);
+                buffer = lines.pop() ?? '';
 
-                for (const line of lines) {
-                    if (line.startsWith('data: ')) {
-                        try {
-                            const result: BenchmarkResult = JSON.parse(line.slice(6));
-
-                            if (result.completed) {
-                                completed.push(result);
-                                setCompletedResults([...completed]);
-                            }
-
-                            setProgressResults((prev) => {
-                                const existing = prev.findIndex((r) => r.structure === result.structure);
-                                if (existing >= 0) {
-                                    const updated = [...prev];
-                                    updated[existing] = result;
-                                    return updated;
-                                }
-                                return [...prev, result];
-                            });
-                        } catch {
-                            // Skip malformed data
-                        }
+                for (const rawLine of lines) {
+                    const line = rawLine.trim();
+                    if (!line) {
+                        currentEvent = 'message';
+                        continue;
                     }
+
+                    if (line.startsWith('event:')) {
+                        currentEvent = line.slice(6).trim() || 'message';
+                        continue;
+                    }
+
+                    if (!line.startsWith('data:')) {
+                        continue;
+                    }
+
+                    const data = line.slice(5).trim();
+                    if (!data || currentEvent === 'complete') {
+                        continue;
+                    }
+
+                    let parsed: unknown;
+                    try {
+                        parsed = JSON.parse(data);
+                    } catch {
+                        continue;
+                    }
+
+                    if (!isBenchmarkResult(parsed)) {
+                        continue;
+                    }
+
+                    if (!config.structures.includes(parsed.structure) || parsed.operation !== config.operation) {
+                        continue;
+                    }
+
+                    if (parsed.completed) {
+                        setCompletedResults((prev) => {
+                            const existing = prev.findIndex((r) => r.structure === parsed.structure);
+                            if (existing >= 0) {
+                                const updated = [...prev];
+                                updated[existing] = parsed;
+                                return updated;
+                            }
+                            return [...prev, parsed];
+                        });
+                    }
+
+                    setProgressResults((prev) => {
+                        const existing = prev.findIndex((r) => r.structure === parsed.structure);
+                        if (existing >= 0) {
+                            const updated = [...prev];
+                            updated[existing] = parsed;
+                            return updated;
+                        }
+                        return [...prev, parsed];
+                    });
                 }
             }
         } catch (err) {
+            if (err instanceof DOMException && err.name === 'AbortError') {
+                return;
+            }
             setError(err instanceof Error ? err.message : '基准测试失败');
         } finally {
-            setIsRunning(false);
+            if (runId === runIdRef.current) {
+                setIsRunning(false);
+                abortControllerRef.current = null;
+            }
         }
     }, [config]);
 
     const handleStop = useCallback(async () => {
+        runIdRef.current += 1;
+        abortControllerRef.current?.abort();
+        abortControllerRef.current = null;
+
         try {
             await fetch(`${API_BASE}/benchmark/stop`, { method: 'POST' });
         } catch {

@@ -9,6 +9,7 @@ import {
     ResponsiveContainer,
     LineChart,
     Line,
+    Cell,
 } from 'recharts';
 import type { BenchmarkResult } from '../types';
 import './BenchmarkChart.css';
@@ -39,7 +40,10 @@ export function BenchmarkChart({
     chartType = 'bar',
 }: BenchmarkChartProps) {
     // Combine completed and progress results
-    const displayResults = results.length > 0 ? results : progressResults;
+    const mergedResults = new Map<string, BenchmarkResult>();
+    progressResults.forEach((result) => mergedResults.set(result.structure, result));
+    results.forEach((result) => mergedResults.set(result.structure, result));
+    const displayResults = Array.from(mergedResults.values());
 
     if (displayResults.length === 0) {
         return (
@@ -51,21 +55,23 @@ export function BenchmarkChart({
     }
 
     // Format data for charts
+    const normalizeNumber = (value: number) => (Number.isFinite(value) ? value : 0);
+
     const timeData = displayResults.map((r) => ({
         name: STRUCTURE_NAMES[r.structure] || r.structure,
-        time: Math.round(r.duration * 100) / 100,
+        time: Math.round(normalizeNumber(r.duration) * 100) / 100,
         fill: STRUCTURE_COLORS[r.structure] || '#6c63ff',
     }));
 
     const memoryData = displayResults.map((r) => ({
         name: STRUCTURE_NAMES[r.structure] || r.structure,
-        memory: Math.round(r.memoryUsed / 1024),
+        memory: Math.round(normalizeNumber(r.memoryUsed) / 1024),
         fill: STRUCTURE_COLORS[r.structure] || '#6c63ff',
     }));
 
     const opsData = displayResults.map((r) => ({
         name: STRUCTURE_NAMES[r.structure] || r.structure,
-        ops: Math.round(r.opsPerSec),
+        ops: Math.round(normalizeNumber(r.opsPerSec)),
         fill: STRUCTURE_COLORS[r.structure] || '#6c63ff',
     }));
 
@@ -100,7 +106,7 @@ export function BenchmarkChart({
                             <Tooltip content={<CustomTooltip />} />
                             <Bar dataKey="time" radius={[4, 4, 0, 0]}>
                                 {timeData.map((entry, index) => (
-                                    <Bar key={index} dataKey="time" fill={entry.fill} />
+                                    <Cell key={`time-${index}`} fill={entry.fill} />
                                 ))}
                             </Bar>
                         </BarChart>
@@ -118,7 +124,7 @@ export function BenchmarkChart({
                             <Tooltip content={<CustomTooltip />} />
                             <Bar dataKey="memory" radius={[4, 4, 0, 0]}>
                                 {memoryData.map((entry, index) => (
-                                    <Bar key={index} dataKey="memory" fill={entry.fill} />
+                                    <Cell key={`memory-${index}`} fill={entry.fill} />
                                 ))}
                             </Bar>
                         </BarChart>
@@ -137,7 +143,7 @@ export function BenchmarkChart({
                             <Legend />
                             <Bar dataKey="ops" name="操作/秒" radius={[4, 4, 0, 0]}>
                                 {opsData.map((entry, index) => (
-                                    <Bar key={index} dataKey="ops" fill={entry.fill} />
+                                    <Cell key={`ops-${index}`} fill={entry.fill} />
                                 ))}
                             </Bar>
                         </BarChart>
@@ -170,18 +176,22 @@ export function BenchmarkChart({
                             </div>
                             <div className="card-stats">
                                 <div className="stat">
-                                    <span className="stat-value">{result.duration.toFixed(2)}</span>
+                                    <span className="stat-value">
+                                        {normalizeNumber(result.duration).toFixed(2)}
+                                    </span>
                                     <span className="stat-label">ms</span>
                                 </div>
                                 <div className="stat">
                                     <span className="stat-value">
-                                        {(result.memoryUsed / 1024).toFixed(1)}
+                                        {(normalizeNumber(result.memoryUsed) / 1024).toFixed(1)}
                                     </span>
                                     <span className="stat-label">KB</span>
                                 </div>
                                 <div className="stat">
                                     <span className="stat-value">
-                                        {result.opsPerSec.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                                        {normalizeNumber(result.opsPerSec).toLocaleString(undefined, {
+                                            maximumFractionDigits: 0,
+                                        })}
                                     </span>
                                     <span className="stat-label">ops/s</span>
                                 </div>
