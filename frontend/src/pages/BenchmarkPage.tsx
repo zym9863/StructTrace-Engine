@@ -20,10 +20,10 @@ export function BenchmarkPage() {
     const runIdRef = useRef(0);
 
     const structures = [
-        { id: 'hashmap', name: 'HashMap', color: '#22c55e' },
-        { id: 'btree', name: 'B-Tree', color: '#eab308' },
-        { id: 'rbtree', name: '红黑树', color: '#ef4444' },
-        { id: 'avltree', name: 'AVL树', color: '#3b82f6' },
+        { id: 'hashmap', name: 'HashMap', color: '#4ff2c1' },
+        { id: 'btree', name: 'B-Tree', color: '#f7b267' },
+        { id: 'rbtree', name: '红黑树', color: '#ff6b6b' },
+        { id: 'avltree', name: 'AVL树', color: '#6aa0ff' },
     ];
 
     const dataSizes = [

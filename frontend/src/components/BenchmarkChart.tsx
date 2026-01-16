@@ -21,10 +21,10 @@ interface BenchmarkChartProps {
 }
 
 const STRUCTURE_COLORS: Record<string, string> = {
-    hashmap: '#22c55e',
-    btree: '#eab308',
-    rbtree: '#ef4444',
-    avltree: '#3b82f6',
+    hashmap: '#4ff2c1',
+    btree: '#f7b267',
+    rbtree: '#ff6b6b',
+    avltree: '#6aa0ff',
 };
 
 const STRUCTURE_NAMES: Record<string, string> = {

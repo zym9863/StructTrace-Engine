@@ -197,8 +197,8 @@ export function GraphCanvas({
                     <defs>
                         {/* Gradient for path edges */}
                         <linearGradient id="pathGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                            <stop offset="0%" stopColor="#10b981" />
-                            <stop offset="100%" stopColor="#3b82f6" />
+                            <stop offset="0%" stopColor="#4ff2c1" />
+                            <stop offset="100%" stopColor="#6aa0ff" />
                         </linearGradient>
 
                         {/* Glow filter for highlighted elements */}
@@ -212,20 +212,20 @@ export function GraphCanvas({
 
                         {/* Node gradient */}
                         <radialGradient id="nodeGradient" cx="30%" cy="30%">
-                            <stop offset="0%" stopColor="#8b5cf6" />
-                            <stop offset="100%" stopColor="#6366f1" />
+                            <stop offset="0%" stopColor="#6aa0ff" />
+                            <stop offset="100%" stopColor="#1f3a5f" />
                         </radialGradient>
 
                         {/* Visited node gradient */}
                         <radialGradient id="visitedGradient" cx="30%" cy="30%">
-                            <stop offset="0%" stopColor="#f59e0b" />
-                            <stop offset="100%" stopColor="#d97706" />
+                            <stop offset="0%" stopColor="#f7b267" />
+                            <stop offset="100%" stopColor="#b96e2a" />
                         </radialGradient>
 
                         {/* Path node gradient */}
                         <radialGradient id="pathNodeGradient" cx="30%" cy="30%">
-                            <stop offset="0%" stopColor="#34d399" />
-                            <stop offset="100%" stopColor="#10b981" />
+                            <stop offset="0%" stopColor="#7af7d2" />
+                            <stop offset="100%" stopColor="#4ff2c1" />
                         </radialGradient>
                     </defs>
 

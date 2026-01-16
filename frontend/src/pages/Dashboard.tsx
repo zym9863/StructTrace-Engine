@@ -8,25 +8,25 @@ export function Dashboard() {
             icon: TreeDeciduous,
             title: '红黑树',
             description: '自平衡二叉搜索树，保证 O(log n) 操作复杂度',
-            color: '#ef4444',
+            color: '#ff6b6b',
         },
         {
             icon: GitBranch,
             title: 'AVL树',
             description: '严格平衡的二叉搜索树，高度差不超过1',
-            color: '#3b82f6',
+            color: '#6aa0ff',
         },
         {
             icon: Binary,
             title: '图结构',
             description: '支持 Dijkstra 最短路径算法可视化',
-            color: '#22c55e',
+            color: '#4ff2c1',
         },
         {
             icon: Database,
             title: 'HashMap',
             description: '哈希表实现，O(1) 平均复杂度',
-            color: '#eab308',
+            color: '#f7b267',
         },
     ];
 

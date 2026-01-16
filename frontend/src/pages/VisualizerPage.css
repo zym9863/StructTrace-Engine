@@ -1,13 +1,25 @@
 .visualizer-page {
     min-height: 100vh;
-    background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #0a0a1a 100%);
+    background: transparent;
 }
 
 /* Header */
 .page-header {
-    padding: 2rem;
-    background: rgba(0, 0, 0, 0.3);
-    border-bottom: 1px solid rgba(108, 99, 255, 0.2);
+    padding: 2.5rem 2rem 1.5rem;
+    background: rgba(7, 12, 20, 0.6);
+    border-bottom: 1px solid rgba(106, 160, 255, 0.25);
+    position: relative;
+}
+
+.page-header::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(79, 242, 193, 0.8), rgba(106, 160, 255, 0.8), transparent);
+    opacity: 0.6;
 }
 
 .header-content {
@@ -19,15 +31,15 @@
     margin: 0 0 0.5rem 0;
     font-size: 2rem;
     font-weight: 700;
-    background: linear-gradient(135deg, #e0e0ff, #6c63ff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--ink-1);
 }
 
 .page-header p {
     margin: 0;
-    color: #8888aa;
+    color: var(--ink-2);
     font-size: 1rem;
 }
 
@@ -40,15 +52,15 @@
 
 .visualizer-layout {
     display: grid;
-    grid-template-columns: 320px 1fr;
+    grid-template-columns: 340px 1fr;
     gap: 2rem;
-    min-height: calc(100vh - 200px);
+    min-height: calc(100vh - 220px);
 }
 
 /* Controls Panel */
 .controls-panel {
     position: sticky;
-    top: 2rem;
+    top: 1.5rem;
     align-self: start;
 }
 
@@ -65,16 +77,16 @@
     align-items: center;
     justify-content: space-between;
     padding: 1rem 1.5rem;
-    background: rgba(239, 68, 68, 0.15);
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    border-radius: 12px;
-    color: #f87171;
+    background: rgba(255, 107, 107, 0.12);
+    border: 1px solid rgba(255, 107, 107, 0.35);
+    border-radius: 14px;
+    color: #ffb4b4;
 }
 
 .error-banner button {
     background: none;
     border: none;
-    color: #f87171;
+    color: #ffb4b4;
     cursor: pointer;
     font-size: 1.2rem;
     padding: 0.25rem;
@@ -82,16 +94,18 @@
 }
 
 .error-banner button:hover {
-    color: #fca5a5;
+    color: #ffd2d2;
 }
 
 /* Canvas Container */
 .canvas-container {
     flex: 1;
-    min-height: 500px;
-    border-radius: 16px;
+    min-height: 520px;
+    border-radius: 20px;
     overflow: hidden;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+    border: 1px solid var(--border-soft);
+    background: rgba(7, 12, 20, 0.6);
 }
 
 /* Player Container */
@@ -129,6 +143,6 @@
     }
 
     .canvas-container {
-        min-height: 350px;
+        min-height: 340px;
     }
 }
